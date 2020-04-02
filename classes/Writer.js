@@ -1,7 +1,7 @@
 import selector from 'css-selector-generator';
 export default class Writer{
   constructor(out = null){
-    this.options = {selectors : ['id', 'attribute', 'class', 'nthoftype' ], blacklist : [/\[.*-ae-.*\]/], combineWithinSelectors : true, combineBetweenSelectors: true, includeTag : true};
+    this.options = {selectors : ['id', 'attribute', 'class', 'nthoftype'], blacklist : [/\[.*ae.*\]/, '[ae_headers_autorem]'], combineWithinSelectors : true, combineBetweenSelectors: true, includeTag : true};
     this.selector = selector;
     this.output =  `//Auto Heading Rem for ${window.location.href} \n if(window.location.pathname ==='${window.location.pathname}'){\n`;
     this.target = out;
