@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+     *[ae_headers_autoRem]{
+    background-color: bisque;
+  }
+  [ae_headers_rem_main]{
+    background-color:aqua;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <a href='/'>
+      <img/>
+    </a>
+    <nav>
+      <a href="testpage1.html"></a>
+    </nav>
+  </header>
+  <main>
+    <h2 id="forceMain">
+      Should be main
+    </h2>
+    <section>
+      <h3>subtitle should be grouped</h3>
+      <p>This is Content and asdasdasdasdasdasdasd just tryinh to fill space</p>
+      <h4>another</h4>
+      <p>sub content</p>
+      <div>
+        <h6>mini header</h6>
+        <h6>mini header</h6>
+        <h6>mini header</h6>
+        <h6>mini header</h6>
+        <h6>mini header</h6>
+        <h6>mini header</h6>
+        <h6>mini header</h6>
+        <h6>mini header</h6>
+        
+
+      </div>
+    </section>
+    <h2>Should be left alone</h2>
+    <button onclick="window.test = remHeaders('#forceMain')">Rem Headers</button>
+  </main>
+  <footer>
+    <h3>to small</h3>
+  </footer>
+  <script src="../header/headerRem/dist/index.js"></script>
+</body>
+</html>
