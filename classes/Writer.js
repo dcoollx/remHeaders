@@ -1,7 +1,7 @@
 import selector from 'css-selector-generator';
 export default class Writer{
-  constructor(out = null){
-    this.options = {selectors : ['id', 'attribute', 'class', 'nthoftype'], blacklist : [/.*-?ae-.*/, '[ae_headers_autorem=*]'], combineWithinSelectors : true, combineBetweenSelectors: true, includeTag : true};
+  constructor(out = null){//
+    this.options = {selectors : ['id','class','tag','attribute','nthchild','nthoftype' ], blacklist : [/.*-?ae-.*/, '[ae_headers_autorem=*]'], combineWithinSelectors : true, combineBetweenSelectors: true, includeTag : true};
     this.selector = selector;
     this.output =  `//Auto Heading Rem for ${window.location.href} \n if(window.location.pathname ==='${window.location.pathname}'){\n`;
     this.target = out;
@@ -15,7 +15,7 @@ export default class Writer{
       this.target.innerHTML = this.output;
       this.target.select();
       document.execCommand('copy');
-      console.log('Rem added to clipboard');
+      console.log('Rem added to clipboard, updated');
     }else{
       alert(this.output);
     }
@@ -29,6 +29,7 @@ export default class Writer{
     if(node.level !== node.originalLvl){
       console.log('writing to output');
       let sel = this.selector(node.element, this.options);
+      sel = sel.replace(/'/g,'"');
       if(node.level > 0){
         this.output += `\t ele.outerFind('${sel}').attr({role:'heading','aria-level':${node.level}}); \n`;
       }else{

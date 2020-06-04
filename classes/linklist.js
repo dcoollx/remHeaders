@@ -118,8 +118,7 @@ export default class LL{
       this.tail = end;
     }
   }
-  push(element){
-    console.log(element.parentElement);
+  push(element, verbose = false){
     if(!this.head){
     //first element
       this.head = new Node(element,null);

@@ -16,8 +16,11 @@ export default class Node{
       //has role header
         if(element.getAttribute('aria-level'))
           this.level = Number(element.getAttribute('aria-level'));
-        else
-          throw new Error('Header without a level');
+        else{
+          console.warn('Heading without a level: ' + element.tagName+'.\nAssigning Temp Level');
+          this.level = 3;
+          this._lvlChanged = true;
+        }
       }
     }else{
     //a H tag
@@ -28,7 +31,11 @@ export default class Node{
         this.level = Number(element.tagName.split('')[1]);
       }
     }
+    //if role presentation set level to 0
     this.originalLvl = this.level;
+    if(element.getAttribute('role') === 'presentation'){
+      this.level = 0;
+    }
   }
   setLevel(lvl){
     this._lvlChanged = true;

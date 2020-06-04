@@ -11,6 +11,10 @@ export default class GUI{
     this.container.id = 'ae_header_rem';
     this.style = document.createElement('style');
     this.style.innerHTML = `
+
+    #headerText, #ae_header_rem label, #ae_header_rem code{
+      color:white
+    }
       #ae_header_rem {
         position: fixed !important;
       color: white;
@@ -30,10 +34,15 @@ export default class GUI{
         margin: 10px;
 
       }
+      #ae_header_rem button:hover{
+        background-color: darkblue;
+      }
       #ae_header_rem input{
         font-size: 24px;
         border: 5px solid black;
         text-align: center;
+        color: black;
+        background-color:white;
       }
       [ae_headers_autorem]{
         background-color : bisque;
@@ -117,7 +126,7 @@ export default class GUI{
     let input = this.container.querySelector('#ae_headerRem_input');
     input.value = this.currentNode.level;
     if(this.currentNode){
-      this.container.querySelector('#headerText').innerText = this.currentNode.element.innerText.trim();
+      this.container.querySelector('#headerText').innerText = this.currentNode.element.innerText.trim() !== '' ? this.currentNode.element.innerText.trim() : this.currentNode.element.querySelector('img[alt]').getAttribute('alt');//TODO, add grabing of img alts
       this.container.querySelector('#headerLevel').innerText = this.currentNode.level;
       document.body.append(this.container);
     }else{

@@ -3,6 +3,7 @@ import LL from './linklist';
 
 export default class regions{
   constructor(){
+    this.allRegions = false;
     this.landmarks = [
       this.main = {
         name: 'Main',
@@ -22,8 +23,9 @@ export default class regions{
     //check for regions
     for (let region of this.landmarks){
       if(!region.elem){
-        throw new Error('a ' + region.name + ' region is not present on page, please add one before invoke header rem');
+        console.warn('HEADER AUTO REM\nThe ' + region.name + ' region is not present on page, please add one. \nRunning in Blind mode');
       }
+      //this.allRegions = true;
     }
   
   }
