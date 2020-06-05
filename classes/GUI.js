@@ -57,11 +57,20 @@ export default class GUI{
     label.setAttribute('for','ae_headerRem_input');
     label.innerText = 'set new heading level';
     let input = document.createElement('input');
+    let suggestion = document.createElement('code');
+    let suggestion_label = document.createElement('label');
+    suggestion.innerHTML = '?';
+    suggestion_label.innerHTML = 'suggested level';
+    suggestion_label.htmlFor = 'suggestion';
+    suggestion.id = 'suggestion';
     input.id = 'ae_headerRem_input';
     input.type = 'number';
     input.min = 0;
     input.max = 6;
     input.title = 'set to 0 for presentation';
+    this.container.append(suggestion_label);
+    this.container.append(suggestion);
+    this.container.append(document.createElement('br'));
     this.container.append(label);
     this.container.append(input);
     this.container.append(document.createElement('br'));
@@ -70,7 +79,7 @@ export default class GUI{
     this.controls_next = document.createElement('button');
     this.controls_next.innerText = 'next >>';
     this.nextButton = ()=>{
-      console.log('original', this.currentNode.originalLvl,'input',input.value, 'node level',this.currentNode.level);
+      //console.log('original', this.currentNode.originalLvl,'input',input.value, 'node level',this.currentNode.level);
       if(Number(input.value) !== this.currentNode.level){
         this.currentNode.setLevel(input.value);
         //todo make this run on finish
@@ -126,6 +135,7 @@ export default class GUI{
     let input = this.container.querySelector('#ae_headerRem_input');
     input.value = this.currentNode.level;
     if(this.currentNode){
+      this.container.querySelector('#suggestion').innerText = '( ' + this.currentNode.suggestedLvl + ' )';
       this.container.querySelector('#headerText').innerText = this.currentNode.element.innerText.trim() !== '' ? this.currentNode.element.innerText.trim() : this.currentNode.element.querySelector('img[alt]').getAttribute('alt');//TODO, add grabing of img alts
       this.container.querySelector('#headerLevel').innerText = this.currentNode.level;
       document.body.append(this.container);

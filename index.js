@@ -5,26 +5,11 @@ import GUI from './classes/GUI';
 
 
 
-window.remHeaders = function(sections = ['header', 'main','footer'], forcedHeader=null, analyzeOnly = true, ignore=null,  notHeaders = null, verbose = false, mainHeaderConfirmed = false,){//currently only take selector strings
-  var allHeadings = document.querySelectorAll;
-
-
-  let updateAll = (n)=>{
-    n.updateLvl();
-  };
-
+window.remHeaders = function(verbose = false, forcedHeader=null, analyzeOnly = true, ignore=null,  notHeaders = null, mainHeaderConfirmed = false,){//currently only take selector strings
   console.log('starting header rem');
   if(analyzeOnly){
-    updateAll = (n)=>null;
+    //updateAll = (n)=>null;
     verbose ? console.log('analyzing only... adding helpers') : null;
-  }
-  if(forcedHeader){    // find all h1 and set to lvl 2
-    document.querySelectorAll('h1, *[role="heading"][aria-level="1"]').forEach(ele=>{
-      setHeaderLevelofElement(ele,'2');
-    });//set selected main to h1
-    setHeaderLevelofElement(document.querySelector(forcedHeader),'1');
-    document.querySelector(forcedHeader).setAttribute('ae_headers_rem_main','');//todo #1 check if forcedheader on page
-    mainHeaderConfirmed = true;
   }
   let landmarks = new regions();
 
@@ -45,96 +30,96 @@ window.remHeaders = function(sections = ['header', 'main','footer'], forcedHeade
   verbose ? console.log(mainList._displayDepth()): null;
   //////////version 3
   let output = new Writer();
-  let panel = new GUI(output,mainList);
-
-
   ///////end version 3
   /////////////new stuff, by landmark
-  /* //header landmark
-let high = 6;
-landmarks.banner.list.traverse((n)=>{
-  if(n.level < high)
-    high = n.level;
-  if(n === landmarks.banner.list.tail)//todo add this check to traverse
-    return true;
-});
-verbose ? console.log('banner lowest level: ', high) : null;
-landmarks.banner.list.traverse((n)=>{
-  if(high !== 2){//dont change if correct
-    if(n.level === high){
-      n.setLevel(2); 
-    }else{
-      let diff = high - 2;
-      verbose ? console.log('node diff = ', diff) : null;
-      n.setLevel(n.level - diff);//move down by the same 
-    }
-  }
-  if(n === landmarks.banner.list.tail)
-    return true;
-});
-
-//landmarks.banner.list.traverse(groupFix);
-///////////find main header
-mainList.mainHeader =  mainList.traverse(n=>n.level===1);//create sub ll
-//console.log('main list', list);
-if(mainList.mainHeader === null){
+  //header landmark
+  if(landmarks.allRegions){
+    let high = 6;
+    landmarks.banner.list.traverse((n)=>{
+      if(n.level < high)
+        high = n.level;
+      if(n === landmarks.banner.list.tail)//todo add this check to traverse
+        return true;
+    });
+    verbose ? console.log('banner lowest level: ', high) : null;
+    landmarks.banner.list.traverse((n)=>{
+      if(high !== 2){//dont change if correct
+        if(n.level === high){
+          n.setSuggestedLevel(2); 
+        }else{
+          let diff = high - 2;
+          verbose ? console.log('node diff = ', diff) : null;
+          n.setSuggestedLevel(n.level - diff);//move down by the same 
+        }
+      }
+      if(n === landmarks.banner.list.tail)
+        return true;
+    });
+  }//end for now
+  //landmarks.banner.list.traverse(groupFix);
+  ///////////find main header
+  mainList.mainHeader =  mainList.traverse(n=>n.level===1);//create sub ll
+  //console.log('main list', list);
+  if(mainList.mainHeader === null){
   //there is no main header
-  let logoHeader = document.querySelector('a[href="/"] > img');//main logo
-  if(!logoHeader){
-    throw new Error('no main header found please add one to page or designate one in function');
+    let logoHeader = document.querySelector('header a[href="/"] > img:eq(0)');//main logo
+    if(!logoHeader){
+      this.console.warn('no main header found please add one to page or designate one in function');
+    }
+    this.console.warn('no h1 found, changing logo to h1');
+    logoHeader.setAttribute('role','heading');
+    logoHeader.setAttribute('aria-level','1');//todo, this doesnt trigger adding to the list of rems
+    //todo wrap in function to be invokeed here
   }
-  logoHeader.setAttribute('role','heading');
-  logoHeader.setAttribute('aria-level','1');
-  return remHeaders();//restart function now that H1 is set
-}
-mainList.mainHeader.element.setAttribute('ae_headers_rem_main','');
-let n = mainList.mainHeader.next;
-while(n.next){
-  if(n.level ===1){
-    n.setLevel(2);
-  } 
-  n = n.next;//increment */
-  //} //
+  mainList.mainHeader.element.setAttribute('ae_headers_rem_main','');
+  let n = mainList.mainHeader.next;
+  while(n.next){
+    if(n.level ===1){
+      n.setSuggestedLevel(2);
+    } 
+    n = n.next;//increment */
+  } //
   //main
 
-  /* landmarks.main.list.traverse(oneStepRule);
+  //landmarks.main.list.traverse(oneStepRule);
 
-//footer
-high = 6;
-landmarks.footer.list.traverse((n)=>{
-  if(n.level < high)
-    high = n.level;
-  if(n === landmarks.banner.list.tail)//todo add this check to traverse
-    return true;
-});
+  //footer
+  let high = 6;
+  landmarks.footer.list.traverse((n)=>{
+    if(n.level < high)
+      high = n.level;
+    if(n === landmarks.banner.list.tail)//todo add this check to traverse
+      return true;
+  });
 
-landmarks.footer.list.traverse((n)=>{
-  if(high !== 2){//dont change if correct
-    if(n.level === high){
-      n.setLevel(2);
-    }else{
-      n.setLevel(0);//role presentation
+  landmarks.footer.list.traverse((n)=>{
+    if(high !== 2){//dont change if correct
+      if(n.level === high){
+        n.setSuggestedLevel(2);
+      }else{
+        n.setSuggestedLevel(0);//role presentation
+      }
     }
-  }
-  if(n === landmarks.banner.list.tail)
-    return true;
-});
-*/
+    if(n === landmarks.banner.list.tail)
+      return true;
+  });
+
 
   //////////
-  /* let subList = new LL();
-if(mainList.mainHeader.prev !== null){//if main is not top of list
-  subList.head = mainList.mainHeader;//todo applie one step rules for sublist, for list aplly specialized checks
-  subList.tail = mainList.tail;
+  let subList = new LL();
+  if(mainList.mainHeader.prev !== null){//if main is not top of list
+    subList.head = mainList.mainHeader;//todo applie one step rules for sublist, for list aplly specialized checks
+    subList.tail = mainList.tail;
   //set any lvl 1 other than main to lvl 2
-}else{
-//there is no sublist
-  subList = mainList;
-}
-console.log('sublist',subList._display()); */
+  }else{
+    //there is no sublist
+    subList = mainList;
+  }
+  console.log('sublist',subList._display());
 
   //subList.traverse(n=>oneStepRule(n));//aply one ste rule to sub list
-  //mainList.mainHeader.setLevel(1);
+  mainList.mainHeader.setSuggestedLevel(1);
   //mainList.traverse();
+  let panel = new GUI(output,mainList);
   return mainList;
 };

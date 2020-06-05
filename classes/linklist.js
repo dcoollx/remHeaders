@@ -4,6 +4,7 @@ class Node{
     this.weight = 0;
     this.next = null;
     this._lvlChanged = false;
+    this.suggestedLvl = '?';
     this.prev = prev;//needed?
     let headerTags = ['h1','h2','h3','h4','h5','h6'];
     this.assignWeight();
@@ -34,6 +35,13 @@ class Node{
     this._lvlChanged = true;
     this.level = lvl;
     this.element.setAttribute('ae_headers_autoRem',this.level);
+  }
+  setSuggestedLevel(lvl){
+    if(typeof lvl === 'number'){
+      this.suggestedLvl = lvl;
+    }else{
+      this.suggestedLvl = '?';
+    }
   }
   assignWeight(){
     let count = 0;
