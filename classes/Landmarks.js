@@ -24,8 +24,9 @@ export default class regions{
     for (let region of this.landmarks){
       if(!region.elem){
         console.warn('HEADER AUTO REM\nThe ' + region.name + ' region is not present on page, please add one. \nRunning in Blind mode');
+        break; 
       }
-      //this.allRegions = true;
+      this.allRegions = true;
     }
   
   }

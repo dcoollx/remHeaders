@@ -1,39 +1,80 @@
-class Node{
-  constructor(element,prev){
-    this.element = element;
-    this.weight = 0;
-    this.next = null;
-    this._lvlChanged = false;
+export class Node{
+  constructor(element,prev, attr = null){
+    this.id;
     this.prev = prev;//needed?
+    this.element = element;
+    this.next = null;
+    this.attr = attr;
+   
+    this.valueChanged = false;
+    this.value = this.newValue = this.element.getAttribute(this.attr);
+    this.display = this.element.innerText;
+    
+  }
+  changeValue(value){
+    this.newValue = value;
+    this.valueChanged = this.value !== this.newValue; 
+    this.element.setAttribute('ae_auto_rem', this.newValue);
+  }
+  getCode(){
+
+    return `attr({'${this.attr}':'${this.newValue}'})`;
+  }
+   
+}//end node
+
+
+export class ImgNode extends Node{
+  constructor(element, prev){
+    super(element, prev, 'alt');
+    this.type='img';
+    this.inputType = 'text';
+    this.display = `<img src="${element.getAttribute('src')}"/>`;
+    //todo check if in link or button
+  }
+  
+}
+export class HNode extends Node{
+  constructor(element, prev){
+    super(element, prev);
+    this.type = 'header';
+    this.inputType = 'number';
+    this.weight = 0;
+    this.suggestedLvl = '?';
     let headerTags = ['h1','h2','h3','h4','h5','h6'];
     this.assignWeight();
     if(!headerTags.includes(element.tagName.toLowerCase())){
-    //not a header tag, check for role
+      //not a header tag, check for role
       if(element.getAttribute('role') !== 'heading'){
         throw new TypeError('needs to be a H tag or have role set to heading, to add non-header element use force header argument');
-      
+    
       }else{
-      //has role header
+        //has role header
         if(element.getAttribute('aria-level'))
-          this.level = Number(element.getAttribute('aria-level'));
+          this.value = Number(element.getAttribute('aria-level'));
+        else if(element.getAttribute('role') === 'presentation')
+          this.value = 0; 
         else
           throw new Error('Header without a level');
       }
     }else{
-    //a H tag
+      //a H tag
       if(element.getAttribute('aria-level')){
-      //its level has been overrided, use this instead
-        this.level = Number(element.getAttribute('aria-level'));
+        //its level has been overrided, use this instead
+        this.value = Number(element.getAttribute('aria-level'));
       }else{
-        this.level = Number(element.tagName.split('')[1]);
+        this.value = Number(element.tagName.split('')[1]);
       }
     }
-    this.originalLvl = this.level;
+    this.originalLvl = this.value;
+    this.display = this.value;
   }
-  setLevel(lvl){
-    this._lvlChanged = true;
-    this.level = lvl;
-    this.element.setAttribute('ae_headers_autoRem',this.level);
+  setSuggestedLevel(lvl){
+    if(typeof lvl === 'number'){
+      this.suggestedLvl = lvl;
+    }else{
+      this.suggestedLvl = '?';
+    }
   }
   assignWeight(){
     let count = 0;
@@ -45,35 +86,27 @@ class Node{
     this.weight = count;
 
   }
-  updateLvl(){
-    if(this._lvlChanged){
-      if(this.element.getAttribute('ae_headers_rem_main')){//main header
-        return;
-      }
-      if(this.level > 1 && this.level < 7){
-        this.element.setAttribute('role','heading');
-        this.element.setAttribute('aria-level',this.level);
-        this._lvlChanged = false;
-      }else{
-        this.element.setAttribute('role','presentation');
-        this.element.removeAttribute('aria-level');
-      }
-      if(this.originalLvl === this.level && this.element.tagName.toLowerCase()[0] === 'h'){
-        this.element.removeAttribute('role');
-        this.element.removeAttribute('aria-level');
-        this.element.removeAttribute('ae_headers_autoRem');
-      }
+  getCode(){
+   
+    if(this.newValue > 1 && this.newValue < 7){
+      return `attr({role:'heading','aria-level':${this.newValue}})`;
+    }else{
+      return 'attr({role:"presentation"})';
     }
+  
   }
-}//end node
-
+}
 export default class LL{
-  constructor(){
+  constructor(nodeType, type ){
+    this.type = type;
     this.head = null;
     this.tail = null;
     this.mainHeader = null;
+    this.length = 0;
+    this.nodeType = nodeType;
 
   }
+  
   traverse(callback = ()=>false){
     let n = this.head;
     if(!n){
@@ -95,7 +128,7 @@ export default class LL{
  * @callback callback - return true to end the traversal before reaching the end
  * @returns {Node | null} - returns node that satifies search, last node in list, or null if list is empty
  */
-  static traverse(start, callback = ()=>false){
+  static traverse(start = this.head, callback = ()=>false){
     if(start){
       let n = start;
       while(n.next){
@@ -118,14 +151,16 @@ export default class LL{
       this.tail = end;
     }
   }
-  push(element, verbose = false){
+  push(element){
     if(!this.head){
     //first element
-      this.head = new Node(element,null);
+      this.head = new this.nodeType(element, null);
       this.tail = this.head;
+      this.head.id = this.length++;
     }else{
       let cEnd = this.traverse();
-      let end = new Node(element,cEnd);
+      let end =  new this.nodeType(element,cEnd);
+      end.id = this.length++;
       cEnd.next = end;
       this.tail = end;
     }
@@ -133,10 +168,20 @@ export default class LL{
   pop(){
     let end = this.tail;
     this.traverse((n)=>n.next.next === null).next = null;
+    this.length--;
     return end;
   }
   fromArray(arr){
     arr.forEach(i=>this.push(i));
+    return this;
+  }
+  toArray(){
+    let arry = [];
+    this.traverse(this.head, (n)=>{
+      arry.push(n);// I want this to be a copy. not ll
+      
+    });
+    return arry;
   }
   _display(){
     let output = '';
